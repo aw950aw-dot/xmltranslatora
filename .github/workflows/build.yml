@@ -45,6 +45,17 @@ jobs:
         with:
           name: xml-translator-apk
           path: bin/*.apk
+          if-no-files-found: error      - name: Build APK
+        run: |
+          export JAVA_HOME=$JAVA_HOME_17_X64
+          export ANDROID_SDK_ROOT=$HOME/.buildozer/android/platform/android-sdk
+          export PATH=$JAVA_HOME/bin:$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools
+          yes | buildozer -v android debug 2>&1
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: xml-translator-apk
+          path: bin/*.apk
           if-no-files-found: error        with:
           name: xml-translator-apk
           path: bin/*.apk
