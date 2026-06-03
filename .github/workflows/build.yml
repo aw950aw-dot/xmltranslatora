@@ -29,14 +29,16 @@ jobs:
           unzip -q /tmp/ct.zip -d /tmp/ct
           mv /tmp/ct/cmdline-tools $SDK/cmdline-tools/latest
           mkdir -p $SDK/tools/bin
-          ln -sf $SDK/cmdline-tools/latest/bin/sdkmanager $SDK/tools/bin/sdkman      - name: Build APK
+          ln -sf $SDK/cmdline-tools/latest/bin/sdkmanager $SDK/tools/bin/sdkmanager
+          export PATH=$PATH:$SDK/cmdline-tools/latest/bin
+          yes | sdkmanager --licenses || true
+          sdkmanager "platform-tools" "build-tools;34.0.0" "platforms;android-33"
+      - name: Build APK
         run: |
-          export JAVA_HOME=$JAVA_HOME_17_X64
           export ANDROID_SDK_ROOT=$HOME/.buildozer/android/platform/android-sdk
-          export PATH=$JAVA_HOME/bin:$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools
-          yes | buildozer -v android debug 2>&1
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+          export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/tools/bin
+          yes | buildozer android debug 2>&1
+      - uses: actions/upload-artifact@v4
         with:
           name: xml-translator-apk
           path: bin/*.apk
